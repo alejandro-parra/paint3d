@@ -76,21 +76,21 @@ function bind() {
 //SHAPE CREATION BUILDERS
 function configureCube() {
     let geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true});
+    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true, transparent: true});
     var mesh = new THREE.Mesh(geometry, mat);
     mesh.name = nameText;
     return mesh
 }
 function configureCone() {
     let geometry = new THREE.ConeGeometry( 0.5, 1, 8 );
-    var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true});
+    var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true, transparent: true});
     var mesh = new THREE.Mesh(geometry, mat);
     mesh.name = nameText;
     return mesh
 }
 function configureSphere() {
     let geometry = new THREE.SphereGeometry( 1, 8, 8 );
-    var mat = new THREE.MeshStandardMaterial({color: "yellow", wireframe: true});
+    var mat = new THREE.MeshStandardMaterial({color: "yellow", wireframe: true, transparent: true});
     var mesh = new THREE.Mesh(geometry, mat);
     mesh.name = nameText;
     return mesh
@@ -144,6 +144,9 @@ function addMenuFor(shape, shapeName) {
     });
     shapePropertiesMenu.addColor(shapeModel, "colorPalette").name("Color palette").listen().onChange((item) => {
         shape.material.color = new THREE.Color(color[0]/256, color[1]/256, color[2]/256);
+    });
+    shapePropertiesMenu.add(shape.material, "opacity").min(0).max(1).step(0.01).setValue(1).name("Opacity").listen().onChange((value) => {
+        shape.material.opacity = value;
     });
 }
 function updateNameText(event) {
@@ -212,6 +215,15 @@ function changeStatsVisibility(event) {
     }
 }
 
+function setBackgroundColorController() {
+    let background = {
+        palette: [1,1,1]
+    };
+    gui.addColor(background, "palette").name("Scene Background").onChange((item) => {
+        scene.background = new THREE.Color(item[0]/256, item[1]/256, item[2]/256);
+    });
+}
+
 //UI UPDATE GENERAL METHODS
 function renderLoop() {
     stats.begin();
@@ -222,7 +234,6 @@ function renderLoop() {
     requestAnimationFrame(renderLoop);
 }
 function updateScene() {
-console.log("update scene");
 }
 
 //CONSTRUCTOR
@@ -233,6 +244,7 @@ function init() {
     addGrid();
     bind();
     gui = new dat.GUI(); 
+    setBackgroundColorController();
     renderLoop();
 }
 

@@ -11,7 +11,18 @@
         <div class="menu-bar">
             <div class="menu-container" id="menu">
                 <p class="menuTitle">Control de objetos</p>
-                <input type="text" placeholder="Nombre de nueva figura" class="">
+                <label class="checkbox-label"><input type="checkbox" id="showStats" checked> Mostrar stats</label>
+                <label class="checkbox-label"><input type="checkbox" id="showFloor" checked> Mostrar piso</label>
+                <input type="text" placeholder="Nombre de nueva figura" class="name-input" id="nameInput">
+                <select name="select" class="shape-select" id="shapeSelect">
+                    <option value="cube" selected>Cube</option>
+                    <option value="sphere">Sphere</option>
+                    <option value="cone">Cone</option>
+                  </select>
+                <button type="button" class="create-button" id="createButton">Crear</button>
+                <div class="shapes-list" id="shapesList">
+                    
+                </div>
             </div>
         </div>
         <div class="stats-container" id="statsContainer">

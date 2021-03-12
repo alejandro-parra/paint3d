@@ -4,9 +4,12 @@ import Stats from "https://unpkg.com/three@0.126.1/examples/jsm/libs/stats.modul
 import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.module.js";
 
 //GLOBAL VARIABLES
-let renderer, scene, camera, cameraControls, stats, gui;
-let mainContainer = document.getElementById('main');
+let renderer, scene, camera, cameraControls, stats, gui, gridHelper;
 let shapes = []; //{name: string, shape: Mesh}
+
+//FORM VALUES
+let nameText = "";
+let shapeType = "cube";
 
 //CUSTOM JS FUNCTIONS
 dat.GUI.prototype.removeFolder = function(name) {
@@ -19,8 +22,13 @@ dat.GUI.prototype.removeFolder = function(name) {
     delete this.__folders[name];
     this.onResize();
 }
-Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
+function nameIsRepeated() {
+    for(let shape of shapes) {
+        if(shape.name === nameText){
+            return true;
+        }
+    }
+    return false;
 }
 
 //INIT FUNCTIONS
@@ -39,7 +47,7 @@ function configureScene() {
     light.position.setScalar(1);
     scene.add(light);
     scene.add(new THREE.AmbientLight(0xffffff, 0.25));
-    scene.add(new THREE.AxesHelper(2));
+    //scene.add(new THREE.AxesHelper(2));
 }
 function appendStats() {
     let statsContainer = document.getElementById('statsContainer');
@@ -48,24 +56,43 @@ function appendStats() {
     stats.domElement.style.cssText = '';
     statsContainer.appendChild(stats.dom);
 }
+function addGrid() {
+    gridHelper = new THREE.GridHelper( 10, 15 );
+    scene.add(gridHelper);
+}
+function bind() {
+    const nameInput = document.getElementById('nameInput');
+    nameInput.addEventListener('input', updateNameText);
+    const shapeSelect = document.getElementById('shapeSelect');
+    shapeSelect.addEventListener('input', updateShapeType);
+    const createButton = document.getElementById('createButton');
+    createButton.onclick = function(){createShape()};
+    const showStats = document.getElementById('showStats');
+    showStats.addEventListener('input', changeStatsVisibility);
+    const showFloor = document.getElementById('showFloor');
+    showFloor.addEventListener('input', changeGridVisibility);
+}
 
 //SHAPE CREATION BUILDERS
 function configureCube() {
     let geometry = new THREE.BoxGeometry( 1, 1, 1 );
     var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true});
     var mesh = new THREE.Mesh(geometry, mat);
+    mesh.name = nameText;
     return mesh
 }
 function configureCone() {
     let geometry = new THREE.ConeGeometry( 0.5, 1, 8 );
     var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true});
     var mesh = new THREE.Mesh(geometry, mat);
+    mesh.name = nameText;
     return mesh
 }
 function configureSphere() {
     let geometry = new THREE.SphereGeometry( 1, 8, 8 );
     var mat = new THREE.MeshStandardMaterial({color: "yellow", wireframe: true});
     var mesh = new THREE.Mesh(geometry, mat);
+    mesh.name = nameText;
     return mesh
 }
 
@@ -119,7 +146,71 @@ function addMenuFor(shape, shapeName) {
         shape.material.color = new THREE.Color(color[0]/256, color[1]/256, color[2]/256);
     });
 }
-
+function updateNameText(event) {
+    nameText = event.target.value;
+}
+function updateShapeType(event) {
+    shapeType = event.target.value;
+}
+function createShape() {
+    if(nameIsRepeated()){ alert('Ese nombre ya está en uso'); return }
+    let newShape;
+    if(shapeType === 'cone'){
+        newShape = configureCone();
+    } else if(shapeType === 'cube') {
+        newShape = configureCube();
+    } else {
+        newShape = configureSphere();
+    }
+    scene.add(newShape);
+    addMenuFor(newShape, nameText);
+    let html = getHtmlShapeCell();
+    let newShapeObject = {
+        name: nameText,
+        shape: newShape,
+        html: html
+    };
+    shapes.push(newShapeObject);
+}
+function getHtmlShapeCell() {
+    let shapeList = document.getElementById('shapesList');
+    shapeList.innerHTML += `<div class="shape"><p class="shape-title">${nameText}</p><button type="button" class="shape-remove" id="${nameText}">Borrar</button></div>`;
+    let newCell = document.getElementById(nameText);
+    newCell.addEventListener('click', deleteShape);
+    return `<div class="shape"><p class="shape-title">${nameText}</p><button type="button" class="shape-remove" id="${nameText}">Borrar</button></div>`;
+}
+async function deleteShape(event) {
+    console.log(event.target.id)
+    for(let [index, shape] of shapes.entries()) {
+        if(shape.name === event.target.id) {
+            scene.remove(scene.getObjectByName(shape.name));
+            gui.removeFolder(`${shape.name} Position`);
+            gui.removeFolder(`${shape.name} Rotation`);
+            gui.removeFolder(`${shape.name} Properties`);
+            shapes.splice(index, 1);
+            renderHtmlList();
+            return
+        }
+    }
+}
+function renderHtmlList() {
+    let newList = "";
+    for(let shape of shapes){
+        newList += shape.html;
+    }
+    let shapeList = document.getElementById('shapesList');
+    shapeList.innerHTML = newList;
+}
+function changeGridVisibility(event){
+    gridHelper.visible = event.target.checked;
+}
+function changeStatsVisibility(event) {
+    if(event.target.checked){
+        stats.domElement.style.visibility = 'visible';
+    } else {
+        stats.domElement.style.visibility = 'hidden';
+    }
+}
 
 //UI UPDATE GENERAL METHODS
 function renderLoop() {
@@ -139,6 +230,8 @@ function init() {
     setRenderer();
     configureScene();
     appendStats();
+    addGrid();
+    bind();
     gui = new dat.GUI(); 
     renderLoop();
 }

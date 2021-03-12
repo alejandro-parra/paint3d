@@ -6,7 +6,7 @@ import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.modul
 //GLOBAL VARIABLES
 let renderer, scene, camera, cameraControls, stats, gui;
 let mainContainer = document.getElementById('main');
-let shapes = [];
+let shapes = []; //{name: string, shape: Mesh}
 
 //CUSTOM JS FUNCTIONS
 dat.GUI.prototype.removeFolder = function(name) {
@@ -25,7 +25,6 @@ Element.prototype.remove = function() {
 
 //INIT FUNCTIONS
 function setRenderer() {
-    // RENDERER ENGINE
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(new THREE.Color(0.2, 0.2, 0.35));
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -43,7 +42,6 @@ function configureScene() {
     scene.add(new THREE.AxesHelper(2));
 }
 function appendStats() {
-    // STATS
     let statsContainer = document.getElementById('statsContainer');
     stats = new Stats();
     stats.showPanel(0); //FPS
@@ -73,7 +71,6 @@ function configureSphere() {
 
 //EVENT HANDLERS
 function addMenuFor(shape, shapeName) {
-    //MODEL
     let shapeModel = {
         rotY: shape.rotation.y * Math.PI / 180,
         rotX: shape.rotation.x * Math.PI / 180,
@@ -96,19 +93,12 @@ function addMenuFor(shape, shapeName) {
         colorPalette: [1, 1, 1]
     }
     
-    //VIEW
     let shapePositionMenu = gui.addFolder(`${shapeName} Position`);
     let shapeRotationMenu = gui.addFolder(`${shapeName} Rotation`);
     let shapePropertiesMenu = gui.addFolder(`${shapeName} Properties`);
-    shapePositionMenu.add(shape.position, "x").min(-5).max(5).setValue(0).step(0.5).name("X").listen().onChange((value) => {
-        console.log(value);
-    });
-    shapePositionMenu.add(shape.position, "y").min(-5).max(5).setValue(0).step(0.5).name("Y").listen().onChange((value) => {
-        console.log(value);
-    });
-    shapePositionMenu.add(shape.position, "z").min(-5).max(5).setValue(2).step(0.5).name("Z").listen().onChange((value) => {
-        console.log(value);
-    });
+    shapePositionMenu.add(shape.position, "x").min(-5).max(5).setValue(0).step(0.5).name("X").listen();
+    shapePositionMenu.add(shape.position, "y").min(-5).max(5).setValue(0).step(0.5).name("Y").listen();
+    shapePositionMenu.add(shape.position, "z").min(-5).max(5).setValue(2).step(0.5).name("Z").listen();
     shapeRotationMenu.add(shapeModel, "rotX").min(-180).step(10).max(180).setValue(0).name("X (deg)").listen().onChange((value) => {
         shape.rotation.x = shapeModel.rotX * Math.PI / 180;
     });
@@ -118,15 +108,9 @@ function addMenuFor(shape, shapeName) {
     shapeRotationMenu.add(shapeModel, "rotZ").min(-180).step(10).max(180).setValue(0).name("Z (deg)").listen().onChange((value) => {
         shape.rotation.z = shapeModel.rotZ * Math.PI / 180;
     });
-    shapePositionMenu.add(shapeModel, 'posHome').name("Reset").onChange((event) => {
-
-    });
-    shapeRotationMenu.add(shapeModel, 'rotHome').name("Reset").onChange((event) => {
-        
-    });
-    shapePropertiesMenu.add(shape.material, "wireframe").setValue(true).name("Wireframe").onChange((value) => {
-
-    });
+    shapePositionMenu.add(shapeModel, 'posHome').name("Reset");
+    shapeRotationMenu.add(shapeModel, 'rotHome').name("Reset");
+    shapePropertiesMenu.add(shape.material, "wireframe").setValue(true).name("Wireframe");
     shapePropertiesMenu.add(shapeModel, "defaultColor", shapeModel.colorList).name("Color list").onChange((item) => {
         shape.material.color = new THREE.Color(shapeModel.defaultColor.toLowerCase());
         shapeModel.colorPalette = [shape.material.color.r, shape.material.color.g, shape.material.color.b]
@@ -135,6 +119,7 @@ function addMenuFor(shape, shapeName) {
         shape.material.color = new THREE.Color(color[0]/256, color[1]/256, color[2]/256);
     });
 }
+
 
 //UI UPDATE GENERAL METHODS
 function renderLoop() {
@@ -154,21 +139,7 @@ function init() {
     setRenderer();
     configureScene();
     appendStats();
-    let cube = configureCube();
-    scene.add(cube);
-    cube.position.z = 2
-
-    let cone = configureCone();
-    scene.add(cone)
-    cone.position.x = 2
-
-    let sphere = configureSphere();
-    scene.add(sphere)
-
-    //GUI
     gui = new dat.GUI(); 
-
-    // ANIMATION
     renderLoop();
 }
 

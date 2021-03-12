@@ -5,7 +5,7 @@ import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.modul
 
 //GLOBAL VARIABLES
 let renderer, scene, camera, cameraControls, stats, gui, gridHelper;
-let shapes = []; //{name: string, shape: Mesh}
+let shapes = []; //{name: string, shape: Mesh, html: Html}
 
 //FORM VALUES
 let nameText = "";

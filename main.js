@@ -3,32 +3,27 @@ import { OrbitControls } from "https://unpkg.com/three@0.126.1/examples/jsm/cont
 import Stats from "https://unpkg.com/three@0.126.1/examples/jsm/libs/stats.module.js";
 import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.module.js";
 
+//GLOBAL VARIABLES
 let renderer, scene, camera, cameraControls, stats, gui;
 let mainContainer = document.getElementById('main');
 let shapes = [];
 
-function init() {
-    setRenderer();
-    configureScene();
-    appendStats();
-    let cube = configureCube();
-    scene.add(cube);
-    cube.position.z = 2
-
-    let cone = configureCone();
-    scene.add(cone)
-    cone.position.x = 2
-
-    let sphere = configureSphere();
-    scene.add(sphere)
-
-    //GUI
-    gui = new dat.GUI(); 
-
-    // ANIMATION
-    renderLoop();
+//CUSTOM JS FUNCTIONS
+dat.GUI.prototype.removeFolder = function(name) {
+    var folder = this.__folders[name];
+    if (!folder) {
+      return;
+    }
+    folder.close();
+    this.__ul.removeChild(folder.domElement.parentNode);
+    delete this.__folders[name];
+    this.onResize();
+}
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
 }
 
+//INIT FUNCTIONS
 function setRenderer() {
     // RENDERER ENGINE
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -36,7 +31,6 @@ function setRenderer() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 }
-
 function configureScene() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 1, 100);
@@ -48,7 +42,6 @@ function configureScene() {
     scene.add(new THREE.AmbientLight(0xffffff, 0.25));
     scene.add(new THREE.AxesHelper(2));
 }
-
 function appendStats() {
     // STATS
     let statsContainer = document.getElementById('statsContainer');
@@ -58,20 +51,19 @@ function appendStats() {
     statsContainer.appendChild(stats.dom);
 }
 
+//SHAPE CREATION BUILDERS
 function configureCube() {
     let geometry = new THREE.BoxGeometry( 1, 1, 1 );
     var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true});
     var mesh = new THREE.Mesh(geometry, mat);
     return mesh
 }
-
 function configureCone() {
     let geometry = new THREE.ConeGeometry( 0.5, 1, 8 );
     var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true});
     var mesh = new THREE.Mesh(geometry, mat);
     return mesh
 }
-
 function configureSphere() {
     let geometry = new THREE.SphereGeometry( 1, 8, 8 );
     var mat = new THREE.MeshStandardMaterial({color: "yellow", wireframe: true});
@@ -79,6 +71,7 @@ function configureSphere() {
     return mesh
 }
 
+//EVENT HANDLERS
 function addMenuFor(shape, shapeName) {
     //MODEL
     let shapeModel = {
@@ -143,6 +136,7 @@ function addMenuFor(shape, shapeName) {
     });
 }
 
+//UI UPDATE GENERAL METHODS
 function renderLoop() {
     stats.begin();
     renderer.render(scene, camera);
@@ -151,29 +145,35 @@ function renderLoop() {
     stats.update();
     requestAnimationFrame(renderLoop);
 }
-
 function updateScene() {
 console.log("update scene");
 }
 
-dat.GUI.prototype.removeFolder = function(name) {
-    var folder = this.__folders[name];
-    if (!folder) {
-      return;
-    }
-    folder.close();
-    this.__ul.removeChild(folder.domElement.parentNode);
-    delete this.__folders[name];
-    this.onResize();
-}
+//CONSTRUCTOR
+function init() {
+    setRenderer();
+    configureScene();
+    appendStats();
+    let cube = configureCube();
+    scene.add(cube);
+    cube.position.z = 2
 
-Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
+    let cone = configureCone();
+    scene.add(cone)
+    cone.position.x = 2
+
+    let sphere = configureSphere();
+    scene.add(sphere)
+
+    //GUI
+    gui = new dat.GUI(); 
+
+    // ANIMATION
+    renderLoop();
 }
 
 // EVENT LISTENERS
 document.addEventListener("DOMContentLoaded", init);
-
 window.addEventListener("resize", function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;

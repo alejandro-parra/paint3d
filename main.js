@@ -312,6 +312,96 @@ function configureTable() {
     return new THREE.Mesh(geometry,material);
 }
 
+function configureL() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0,0,1,
+        0.5,0,1,
+        0.5,0.5,1,
+        0,0.5,1,
+        0,0.5,0.5,
+        0.5,0.5,0.5,
+        0.5,1,0.5,
+        0,1,0.5,
+        0,1,0,
+        0.5,1,0,
+        0.5,0,0.5,
+        0,0,0.5
+    ];
+    let indices = [
+        0,1,2,
+        1,2,3,
+        0,1,10,
+        10,1,11,
+        1,12,8,
+        1,11,8,
+        0,13,9,
+        0,9,10,
+        10,11,9,
+        11,9,8,
+        2,4,3,
+        5,2,4,
+        12,3,4,
+        12,7,4,
+        13,6,2,
+        2,6,5,
+        6,5,7,
+        7,5,4,
+        6,8,9,
+        6,7,8
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
+function configureArrow() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0,0,0.5,
+        0.5,0,0.5,
+        0,0.5,0.25,
+        0.5,0.5,0.25,
+        0.5,0.5,0.75,
+        0,0.5,0.75,
+        0,1,0,
+        0.5,1,0,
+        0,1,0.5,
+        0.5,1,0.5
+    ];
+    let indices = [
+        0,1,2,
+        1,2,3,
+        0,4,1,
+        4,5,1,
+        1,5,3,
+        3,5,6,
+        0,4,2,
+        4,2,7,
+        2,7,6,
+        2,6,3,
+        4,8,9,
+        4,9,5,
+        9,5,6,
+        9,11,6,
+        7,10,11,
+        7,6,11,
+        8,7,10,
+        8,4,7,
+        8,9,10,
+        9,10,11
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
 function configure() {
     
     let geometry = new THREE.BufferGeometry();
@@ -400,6 +490,12 @@ function createShape() {
     }
     else if(shapeType === 'table') {
         newShape = configureTable();
+    }
+    else if(shapeType === 'l') {
+        newShape = configureL();
+    }
+    else if(shapeType === 'arrow') {
+        newShape = configureArrow();
     }
     else {
         alert('Seleccione una figura');

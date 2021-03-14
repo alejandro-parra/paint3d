@@ -74,26 +74,251 @@ function bind() {
 }
 
 //SHAPE CREATION BUILDERS
-function configureCube() {
-    let geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true, transparent: true});
-    var mesh = new THREE.Mesh(geometry, mat);
-    mesh.name = nameText;
-    return mesh
+function configurePyramid() {
+    let vertices = [-0.5, 0.5, 0,
+        -0.5, -0.5, 0,
+        0.5, -0.5, 0,
+        0.5, 0.5, 0,
+        0,0,0.5
+    ];
+    let indices = [0,1,2, 0,2,3, 4,1, 2,4, 3];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
 }
-function configureCone() {
-    let geometry = new THREE.ConeGeometry( 0.5, 1, 8 );
-    var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true, transparent: true});
-    var mesh = new THREE.Mesh(geometry, mat);
-    mesh.name = nameText;
-    return mesh
+
+function configureRoof() {
+    let vertices = [
+        -0.5, 0.5, 0,
+        -0.5, -0.5, 0,
+        0.5, -0.5, 0,
+        0.5, 0.5, 0,
+        0 , 0.5, 0.5,
+        0 , -0.5, 0.5
+    ];
+    let indices = [0,1,2, 0,2,3, 4,3, 0,1,5, 2, 4, 5, 0, 1, 5,0];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
 }
-function configureSphere() {
-    let geometry = new THREE.SphereGeometry( 1, 8, 8 );
-    var mat = new THREE.MeshStandardMaterial({color: "yellow", wireframe: true, transparent: true});
-    var mesh = new THREE.Mesh(geometry, mat);
-    mesh.name = nameText;
-    return mesh
+
+function configureTetris() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0.5,0.5,0,
+        0,0.5,0,
+        0,0.5,0.5,
+        0.5,0.5,0.5,
+        0.5,1,0.5,
+        0,1,0.5,
+        0,1,1,
+        0.5,1,1,
+        0.5,0.5,1,
+        0,0.5,1,
+        0,0.5,1.5,
+        0.5,0.5,1.5,
+        0,0,1.5,
+        0.5,0,1.5
+    ];
+    let indices = [
+        0,1,2, 
+        3,0,2, 
+        3,4,2, 
+        4,2,5, 
+        4,5,7, 
+        5,6,7,
+        5,6,10,
+        9,6,10,
+        7,6,8,
+        8,6,9,
+        4,7,11,
+        8,7,11,
+        8,11,9,
+        11,10,9,
+        11,10,13,
+        11,12,13,
+        12,14,13,
+        14,15,13,
+        2,1,15,
+        13,15,2,
+        0,3,14,
+        14,12,3,
+        0,1,14,
+        14,15,1
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
+function configureStairs() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0.5,0.5,0,
+        0,0.5,0,
+        0,0.5,0.5,
+        0.5,0.5,0.5,
+        0.5,1,0.5,
+        0,1,0.5,
+        0,1,1,
+        0.5,1,1,
+        0.5,0.5,1,
+        0,0.5,1,
+        0,0.5,1.5,
+        0.5,0.5,1.5,
+        0,0,1.5,
+        0.5,0,1.5,
+        0,1.5,1,
+        0,1.5,1.5,
+        0.5,1.5,1.5,
+        0.5,1.5,1
+    ];
+    let indices = [
+        0,1,2, 
+        3,0,2, 
+        3,4,2, 
+        4,2,5, 
+        4,5,7, 
+        5,6,7,
+        5,6,10,
+        9,6,10,
+        7,6,8,
+        8,6,9,
+        4,7,11,
+        8,7,11,
+        8,11,9,
+        11,10,9,
+        11,10,13,
+        11,12,13,
+        12,14,13,
+        14,15,13,
+        2,1,15,
+        13,15,2,
+        0,3,14,
+        14,12,3,
+        0,1,14,
+        14,15,1,
+        11,16,19,
+        19,10,11,
+        19,10,13,
+        19,18,13,
+        16,11,12,
+        16,17,12,
+        12,17,18,
+        13,18,12,
+        19,16,17,
+        17,19,18
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
+function configureDiamond() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0,0,0.5,
+        0.5,0,0.5,
+        0.25,0.5,0.25,
+        0.25,-0.5,0.25
+    ];
+    let indices = [
+        0,1,2,
+        2,1,3,
+        0,1,4,
+        0,2,4,
+        2,3,4,
+        3,1,4,
+        0,1,5,
+        0,2,5,
+        2,3,5,
+        3,1,5,
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
+function configureTable() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0,1,0,
+        0.5,1,0,
+        0.5,0,0.5,
+        0,0,0.5,
+        0,0.5,0.5,
+        0.5,0.5,0.5,
+        0.5,0.5,1,
+        0,0.5,1,
+        0,0,1,
+        0.5,0,1,
+        0.5,0,1.5,
+        0,0,1.5,
+        0.5,1,1.5,
+        0,1,1.5,
+        0.5,0.5,0,
+        0,0.5,0,
+        0,0.5,1.5,
+        0.5,0.5,1.5
+    ];
+    let indices = [
+        0,2,1,
+        2,1,3,
+        0,1,4,
+        0,5,4,
+        6,5,4,
+        4,7,6,
+        6,7,9,
+        7,9,8,
+        9,10,8,
+        10,8,11,
+        10,11,13,
+        11,13,12,
+        13,15,12,
+        12,15,14,
+        2,3,14,
+        14,3,15,
+        3,16,19,
+        14,3,19,
+        1,4,7,
+        1,16,7,
+        11,12,19,
+        11,8,19,
+        2,17,15,
+        17,15,18,
+        0,17,6,
+        0,5,6,
+        9,10,18,
+        10,18,13
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
+function configure() {
+    
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
 }
 
 //EVENT HANDLERS
@@ -158,13 +383,28 @@ function updateShapeType(event) {
 function createShape() {
     if(nameIsRepeated()){ alert('Ese nombre ya está en uso'); return }
     let newShape;
-    if(shapeType === 'cone'){
-        newShape = configureCone();
-    } else if(shapeType === 'cube') {
-        newShape = configureCube();
-    } else {
-        newShape = configureSphere();
+    if(shapeType === 'pyramid') {
+        newShape = configurePyramid();
+    } 
+    else if(shapeType === 'roof') {
+        newShape = configureRoof();
+    } 
+    else if(shapeType === 'tetris') {
+        newShape = configureTetris();
     }
+    else if(shapeType === 'stairs') {
+        newShape = configureStairs();
+    }
+    else if(shapeType === 'diamond') {
+        newShape = configureDiamond();
+    }
+    else if(shapeType === 'table') {
+        newShape = configureTable();
+    }
+    else {
+        alert('Seleccione una figura');
+        return;
+    } 
     scene.add(newShape);
     addMenuFor(newShape, nameText);
     let html = getHtmlShapeCell();

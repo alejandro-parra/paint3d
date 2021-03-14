@@ -402,8 +402,159 @@ function configureArrow() {
     return new THREE.Mesh(geometry,material);
 }
 
-function configure() {
-    
+function configureAdd() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0,0,0.5,
+        0.5,0,0.5,
+        0,0.5,0.5,
+        0.5,0.5,0.5,
+        0.5,0.5,0,
+        0,0.5,0,
+        0,0.5,-0.5,
+        0.5,0.5,-0.5,
+        0,1,-0.5,
+        0.5,1,-0.5,
+        0,1,0,
+        0.5,1,0,
+        0,1,0.5,
+        0.5,1,0.5,
+        0,1,1,
+        0.5,1,1,
+        0,0.5,1,
+        0.5,0.5,1,
+        0,1.5,0,
+        0.5,1.5,0,
+        0,1.5,0.5,
+        0.5,1.5,0.5
+    ];
+    let indices = [
+        0,1,2,
+        1,2,3,
+        0,7,1,
+        7,6,1,
+        2,4,3,
+        4,5,3,
+        1,6,3,
+        6,5,3,
+        0,7,4,
+        4,2,0,
+        6,8,7,
+        6,8,9,
+        8,9,10,
+        10,9,11,
+        9,11,13,
+        9,6,13,
+        8,10,12,
+        8,7,12,
+        10,12,11,
+        12,11,13,
+        6,13,15,
+        6,5,15,
+        7,12,14,
+        7,4,14,
+        4,14,16,
+        4,18,16,
+        5,19,17,
+        5,15,17,
+        4,5,18,
+        5,19,18,
+        18,16,17,
+        18,19,17,
+        14,15,16,
+        15,16,17,
+        12,20,21,
+        12,21,13,
+        13,21,15,
+        23,21,15,
+        12,20,14,
+        14,20,22,
+        22,14,23,
+        14,15,23,
+        20,21,22,
+        21,23,22
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    return new THREE.Mesh(geometry,material);
+}
+
+function configureCross() {
+    let vertices = [
+        0,-0.5,0,
+        0.5,-0.5,0,
+        0,-0.5,0.5,
+        0.5,-0.5,0.5,
+        0,0.5,0.5,
+        0.5,0.5,0.5,
+        0.5,0.5,0,
+        0,0.5,0,
+        0,0.5,-0.5,
+        0.5,0.5,-0.5,
+        0,1,-0.5,
+        0.5,1,-0.5,
+        0,1,0,
+        0.5,1,0,
+        0,1,0.5,
+        0.5,1,0.5,
+        0,1,1,
+        0.5,1,1,
+        0,0.5,1,
+        0.5,0.5,1,
+        0,1.5,0,
+        0.5,1.5,0,
+        0,1.5,0.5,
+        0.5,1.5,0.5
+    ];
+    let indices = [
+        0,1,2,
+        1,2,3,
+        0,7,1,
+        7,6,1,
+        2,4,3,
+        4,5,3,
+        1,6,3,
+        6,5,3,
+        0,7,4,
+        4,2,0,
+        6,8,7,
+        6,8,9,
+        8,9,10,
+        10,9,11,
+        9,11,13,
+        9,6,13,
+        8,10,12,
+        8,7,12,
+        10,12,11,
+        12,11,13,
+        6,13,15,
+        6,5,15,
+        7,12,14,
+        7,4,14,
+        4,14,16,
+        4,18,16,
+        5,19,17,
+        5,15,17,
+        4,5,18,
+        5,19,18,
+        18,16,17,
+        18,19,17,
+        14,15,16,
+        15,16,17,
+        12,20,21,
+        12,21,13,
+        13,21,15,
+        23,21,15,
+        12,20,14,
+        14,20,22,
+        22,14,23,
+        14,15,23,
+        20,21,22,
+        21,23,22
+    ];
     let geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
@@ -496,6 +647,12 @@ function createShape() {
     }
     else if(shapeType === 'arrow') {
         newShape = configureArrow();
+    }
+    else if(shapeType === 'add') {
+        newShape = configureAdd();
+    }
+    else if(shapeType === 'cross') {
+        newShape = configureCross();
     }
     else {
         alert('Seleccione una figura');

@@ -608,8 +608,8 @@ function addMenuFor(shape, shapeName) {
         shape.material.color = new THREE.Color(shapeModel.defaultColor.toLowerCase());
         shapeModel.colorPalette = [shape.material.color.r, shape.material.color.g, shape.material.color.b]
     });
-    shapePropertiesMenu.addColor(shapeModel, "colorPalette").name("Color palette").listen().onChange((item) => {
-        shape.material.color = new THREE.Color(color[0]/256, color[1]/256, color[2]/256);
+    shapePropertiesMenu.addColor(shapeModel, "colorPalette").name("Color palette").listen().onChange((color) => {
+        shape.material.color = new THREE.Color(color[0]/255, color[1]/255, color[2]/255);
     });
     shapePropertiesMenu.add(shape.material, "opacity").min(0).max(1).step(0.01).setValue(1).name("Opacity").listen().onChange((value) => {
         shape.material.opacity = value;

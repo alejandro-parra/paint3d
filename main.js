@@ -562,6 +562,15 @@ function configureCross() {
     return new THREE.Mesh(geometry,material);
 }
 
+function configureCube() {
+    let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true});
+    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true, transparent: true});
+    var mesh = new THREE.Mesh(geometry, mat);
+    mesh.name = nameText;
+    return mesh
+}
+
 //EVENT HANDLERS
 function addMenuFor(shape, shapeName) {
     let shapeModel = {
@@ -611,6 +620,7 @@ function addMenuFor(shape, shapeName) {
     shapePropertiesMenu.addColor(shapeModel, "colorPalette").name("Color palette").listen().onChange((color) => {
         shape.material.color = new THREE.Color(color[0]/255, color[1]/255, color[2]/255);
     });
+    shape.material.transparent = true;
     shapePropertiesMenu.add(shape.material, "opacity").min(0).max(1).step(0.01).setValue(1).name("Opacity").listen().onChange((value) => {
         shape.material.opacity = value;
     });
@@ -653,6 +663,9 @@ function createShape() {
     }
     else if(shapeType === 'cross') {
         newShape = configureCross();
+    }
+    else if(shapeType === 'cube') {
+        newShape = configureCube();
     }
     else {
         alert('Seleccione una figura');

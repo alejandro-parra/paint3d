@@ -4,7 +4,7 @@ import Stats from "https://unpkg.com/three@0.126.1/examples/jsm/libs/stats.modul
 import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.module.js";
 
 //GLOBAL VARIABLES
-let renderer, scene, camera, cameraControls, stats, gui, gridHelper;
+let renderer, scene, camera, cameraControls, stats, gui, gridHelper, player;
 let shapes = []; //{name: string, shape: Mesh, html: Html}
 
 //FORM VALUES
@@ -15,7 +15,7 @@ let shapeType = "cube";
 dat.GUI.prototype.removeFolder = function(name) {
     var folder = this.__folders[name];
     if (!folder) {
-      return;
+    return;
     }
     folder.close();
     this.__ul.removeChild(folder.domElement.parentNode);
@@ -71,6 +71,252 @@ function bind() {
     showStats.addEventListener('input', changeStatsVisibility);
     const showFloor = document.getElementById('showFloor');
     showFloor.addEventListener('input', changeGridVisibility);
+
+    const selectCode = document.getElementById('selectCode');
+    const sourceCode = document.getElementById('sourceCode');
+    var sourceCodeTokens = [];
+    const selectCodeWhileIf = document.getElementById('selectCodeWhileIf');
+    const extraSourceCode = document.getElementById('extraSourceCode');
+    var extraSourceCodeTokens = [];
+    const numberInput = document.getElementById('numberInput');
+
+    const addExtraCodeBtn = document.getElementById('addExtraCodeBtn');
+    const addCodeBtn = document.getElementById('addCodeBtn');
+    const clearCodeBtn = document.getElementById('clearCodeBtn');
+    const clearExtraCodeBtn = document.getElementById('clearExtraCodeBtn');
+
+    selectCode.addEventListener('change', () => {
+        extraSourceCodeTokens = [];
+        if(selectCode.value==="while" || selectCode.value==="if" || selectCode.value==="for"){
+            selectCodeWhileIf.hidden = false;
+            extraSourceCode.hidden = false;
+            if(selectCode.value==="for"){
+                numberInput.hidden = false;
+                numberInput.value = "";
+            } else {
+                numberInput.hidden = true;
+                numberInput.value = -1;
+            }
+            extraSourceCode.value = "";
+            addExtraCodeBtn.hidden = false;
+            clearExtraCodeBtn.hidden = false;
+        } else {
+            numberInput.hidden = true;
+            numberInput.value = -1;
+            selectCodeWhileIf.hidden = true;
+            extraSourceCode.hidden = true;
+            extraSourceCode.value = "";
+            addExtraCodeBtn.hidden = true;
+            clearExtraCodeBtn.hidden = true;
+        }
+    });
+
+    addExtraCodeBtn.onclick = () => {
+        extraSourceCodeTokens.push(selectCodeWhileIf.value);
+        extraSourceCode.value = '';
+        extraSourceCodeTokens.forEach(element => {
+            switch (element) {
+                case 'front':
+                    extraSourceCode.value += 'Move(Front)\r\n';
+                    break;
+
+                case 'back':
+                    extraSourceCode.value += 'Move(Back)\r\n';
+                    break;
+
+                case 'right':
+                    extraSourceCode.value += 'Move(Right)\r\n';
+                    break;
+
+                case 'left':
+                    extraSourceCode.value += 'Move(Left)\r\n';
+                    break;
+
+                case 'jump':
+                    extraSourceCode.value += 'Jump()\r\n';
+                    break;
+
+                default:
+                    break;
+            }
+        });
+    }
+
+    addCodeBtn.onclick = () => {
+        if(selectCode.value==="while" || selectCode.value==="if" || selectCode.value==="for"){
+            var codeBlock = [];
+
+            switch (selectCode.value) {
+                case 'while':
+                    codeBlock.push('while');
+                    break;
+                
+                case 'for':
+                    codeBlock.push('for');
+                    break;
+                
+
+                case 'if':
+                    codeBlock.push('if');
+                    break;
+                        
+                default:
+                    break;
+            }
+
+            if(selectCode.value==='for'){
+                codeBlock.push(numberInput.value);
+            }
+
+            extraSourceCodeTokens.forEach(element => {
+                codeBlock.push(element);
+            });
+
+            sourceCodeTokens.push(codeBlock);
+            extraSourceCode.value = '';
+            extraSourceCodeTokens = [];
+            numberInput.value = '';
+            sourceCode.value = '';
+        } else {
+            sourceCodeTokens.push(selectCode.value);
+        }
+        sourceCode.value = '';
+        sourceCodeTokens.forEach(element => {
+            switch (element) {
+                case 'front':
+                    sourceCode.value += 'Move(Front)\r\n';
+                    break;
+
+                case 'back':
+                    sourceCode.value += 'Move(Back)\r\n';
+                    break;
+
+                case 'right':
+                    sourceCode.value += 'Move(Right)\r\n';
+                    break;
+
+                case 'left':
+                    sourceCode.value += 'Move(Left)\r\n';
+                    break;
+
+                case 'jump':
+                    sourceCode.value += 'Jump()\r\n';
+                    break;
+
+                default:
+                    switch (element[0]) {
+                        case 'while':
+                            sourceCode.value += 'While{\r\n';
+                            for (let i = 1; i < element.length; i++) {
+                                switch (element[i]) {
+                                    case 'front':
+                                        sourceCode.value += '  Move(Front)\r\n';
+                                        break;
+                
+                                    case 'back':
+                                        sourceCode.value += '  Move(Back)\r\n';
+                                        break;
+                
+                                    case 'right':
+                                        sourceCode.value += '  Move(Right)\r\n';
+                                        break;
+                
+                                    case 'left':
+                                        sourceCode.value += '  Move(Left)\r\n';
+                                        break;
+                
+                                    case 'jump':
+                                        sourceCode.value += '  Jump()\r\n';
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+                            sourceCode.value += '}\r\n';
+                            break;
+                    
+                        case 'for':
+                            sourceCode.value += 'For{\r\n';
+                            for (let i = 1; i < element.length; i++) {
+                                switch (element[i]) {
+                                    case 'front':
+                                        sourceCode.value += '  Move(Front)\r\n';
+                                        break;
+                
+                                    case 'back':
+                                        sourceCode.value += '  Move(Back)\r\n';
+                                        break;
+                
+                                    case 'right':
+                                        sourceCode.value += '  Move(Right)\r\n';
+                                        break;
+                
+                                    case 'left':
+                                        sourceCode.value += '  Move(Left)\r\n';
+                                        break;
+                
+                                    case 'jump':
+                                        sourceCode.value += '  Jump()\r\n';
+                                        break;
+
+                                    default:
+                                        sourceCode.value += '  Iteración: ' + element[i] + '\r\n'
+                                        break;
+                                }
+                            }
+                            sourceCode.value += '}\r\n';
+                            break;
+
+                        case 'if':
+                            sourceCode.value += 'If{\r\n';
+                            for (let i = 1; i < element.length; i++) {
+                                switch (element[i]) {
+                                    case 'front':
+                                        sourceCode.value += '  Move(Front)\r\n';
+                                        break;
+                
+                                    case 'back':
+                                        sourceCode.value += '  Move(Back)\r\n';
+                                        break;
+                
+                                    case 'right':
+                                        sourceCode.value += '  Move(Right)\r\n';
+                                        break;
+                
+                                    case 'left':
+                                        sourceCode.value += '  Move(Left)\r\n';
+                                        break;
+                
+                                    case 'jump':
+                                        sourceCode.value += '  Jump()\r\n';
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+                            sourceCode.value += '}\r\n';
+                            break;
+                    
+                        default:
+                            break;
+                    }
+
+                    break;
+            }
+        });
+    }
+
+    clearCodeBtn.onclick = () => {
+        sourceCode.value = '';
+        sourceCodeTokens = [];
+    }
+
+    clearExtraCodeBtn.onclick = () => {
+        extraSourceCode.value = '';
+        extraSourceCodeTokens = [];
+    }
 }
 
 //SHAPE CREATION BUILDERS
@@ -751,6 +997,8 @@ function init() {
     bind();
     gui = new dat.GUI(); 
     setBackgroundColorController();
+    player = configureCube();
+    scene.add(player);
     renderLoop();
 }
 

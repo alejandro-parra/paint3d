@@ -6,6 +6,7 @@ import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.modul
 //GLOBAL VARIABLES
 let renderer, scene, camera, cameraControls, stats, gui, gridHelper, player;
 let shapes = []; //{name: string, shape: Mesh, html: Html}
+let collidableMeshList = [];
 
 //FORM VALUES
 let nameText = "";
@@ -810,6 +811,14 @@ function configureCube() {
     return mesh;
 }
 
+function configureWall() {
+    let geometry = new THREE.BoxGeometry(0.2, 1, 3);
+    var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true, transparent: true});
+    var mesh = new THREE.Mesh(geometry, mat);
+    mesh.name = nameText;
+    return mesh
+}
+
 //EVENT HANDLERS
 function addMenuFor(shape, shapeName) {
     let shapeModel = {
@@ -987,6 +996,74 @@ function renderLoop() {
     requestAnimationFrame(renderLoop);
 }
 function updateScene() {
+    runCollisionDetector();
+    player.position.x += 0.01
+}
+
+function runCollisionDetector() {
+    // collision detection:
+    //   determines if any of the rays from the cube's origin to each vertex
+    //		intersects any face of a mesh in the array of target meshes
+    //   for increased collision accuracy, add more vertices to the cube;
+    //		for example, new THREE.CubeGeometry( 64, 64, 64, 8, 8, 8, wireMaterial )
+    //   HOWEVER: when the origin of the ray is within the target mesh, collisions do not occur
+    let originPoint = player.position.clone();
+    const position = player.geometry.attributes.position;
+    const vector = new THREE.Vector3();
+
+    for (let vertexIndex = 0; vertexIndex < position.count; vertexIndex++) {
+        let localVertexVec = vector.fromBufferAttribute(position, vertexIndex);
+        let localVertex = localVertexVec.clone();
+        let globalVertex = localVertex.applyMatrix4(player.matrix);
+        let directionVector = globalVertex.sub(player.position);
+
+        let ray = new THREE.Raycaster(
+            originPoint,
+            directionVector.clone().normalize()
+        );
+
+        let collisionResults = ray.intersectObjects(collidableMeshList);
+        if (
+            collisionResults.length > 0 &&
+            collisionResults[0].distance < directionVector.length()
+        ) {
+            console.log('collision', collisionResults );
+            if (collisionResults[0].object.name.includes("wall")) {
+                // TRY AGAIN
+                player.position.x = 0;
+                player.position.z = 0;
+            }
+            if (collisionResults[0].object.name.includes("gem")) {
+                // ADD POINTS
+            }
+        }
+    }
+}
+
+function addWallToScene(x, z, name = "wall") {
+    if (name === "wall") {
+        name += collidableMeshList.length.toString();
+    }
+    let wall = configureWall();
+    wall.position.x = x;
+    wall.position.y = 0.5
+    wall.position.z = z;
+    wall.name = name;
+    collidableMeshList.push(wall);
+    scene.add(wall);
+}
+
+function addGemToScene(x, z, name = "gem") {
+    if (name === "gem") {
+        name += collidableMeshList.length.toString();
+    }
+    let gem = configureDiamond();
+    gem.position.x = x;
+    gem.position.y = 0.5
+    gem.position.z = z;
+    gem.name = name;
+    collidableMeshList.push(gem);
+    scene.add(gem);
 }
 
 //CONSTRUCTOR
@@ -999,7 +1076,13 @@ function init() {
     gui = new dat.GUI(); 
     setBackgroundColorController();
     player = configureCube();
+    console.log('player', player);
     scene.add(player);
+
+    addWallToScene(3, 1.5);
+    addWallToScene(-3, 0.5);
+    addGemToScene(2,3);
+    
     renderLoop();
 }
 

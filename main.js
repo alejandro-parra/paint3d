@@ -4,9 +4,21 @@ import Stats from "https://unpkg.com/three@0.126.1/examples/jsm/libs/stats.modul
 import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.module.js";
 
 //GLOBAL VARIABLES
-let renderer, scene, camera, cameraControls, stats, gui, gridHelper, player;
+let camera,
+    cameraControls,
+    clearedTokens,
+    gridHelper,
+    gui,
+    execInterval,
+    player,
+    renderer,
+    scene,
+    stats;
+
 let shapes = []; //{name: string, shape: Mesh, html: Html}
 let collidableMeshList = [];
+
+let eatenGems = [];
 
 //FORM VALUES
 let nameText = "";
@@ -237,7 +249,7 @@ function bind() {
     }
 
     executeCodeBtn.onclick = () => {
-        let clearedTokens = [];
+        clearedTokens = [];
 
         for(let token of sourceCodeTokens){
             if(typeof token === 'object'){
@@ -285,11 +297,18 @@ function bind() {
                     break;
             }
             if(i >= clearedTokens.length){
-                clearInterval(intr);
+                clearInterval(execInterval);
+
+                // CLEAR CODE
+                sourceCode.value = '';
+                sourceCodeTokens = [];
+
+                extraSourceCode.value = '';
+                extraSourceCodeTokens = [];
             }
         }
 
-        let intr = setInterval(tokens, 1000);
+        execInterval = setInterval(tokens, 1000);
     }
 }
 
@@ -804,8 +823,8 @@ function configureCross() {
 
 function configureCube() {
     let geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true});
-    var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true, transparent: true});
+    var mat = new THREE.MeshStandardMaterial({color: "red"});
+    var mat = new THREE.MeshStandardMaterial({color: "red", transparent: true});
     var mesh = new THREE.Mesh(geometry, mat);
     mesh.name = nameText;
     return mesh;
@@ -997,7 +1016,7 @@ function renderLoop() {
 }
 function updateScene() {
     runCollisionDetector();
-    player.position.x += 0.01
+    // player.position.x += 0.01
 }
 
 function runCollisionDetector() {
@@ -1027,20 +1046,27 @@ function runCollisionDetector() {
             collisionResults.length > 0 &&
             collisionResults[0].distance < directionVector.length()
         ) {
-            console.log('collision', collisionResults );
             if (collisionResults[0].object.name.includes("wall")) {
                 // TRY AGAIN
+                clearInterval(execInterval);
                 player.position.x = 0;
                 player.position.z = 0;
+
+                for (let eatenGem of eatenGems) {
+                    scene.add(eatenGem);
+                }
             }
             if (collisionResults[0].object.name.includes("gem")) {
                 // ADD POINTS
+                const gem = collisionResults[0].object;
+                scene.remove(gem);
+                eatenGems.push(gem);
             }
         }
     }
 }
 
-function addWallToScene(x, z, name = "wall") {
+function addWallToScene(x, z, rotY = 0, name = "wall") {
     if (name === "wall") {
         name += collidableMeshList.length.toString();
     }
@@ -1048,8 +1074,12 @@ function addWallToScene(x, z, name = "wall") {
     wall.position.x = x;
     wall.position.y = 0.5
     wall.position.z = z;
+
+    wall.rotation.y = rotY * Math.PI / 180;
     wall.name = name;
+    wall.material.wireframe = false;
     collidableMeshList.push(wall);
+    console.log('wall', wall);
     scene.add(wall);
 }
 
@@ -1062,6 +1092,7 @@ function addGemToScene(x, z, name = "gem") {
     gem.position.y = 0.5
     gem.position.z = z;
     gem.name = name;
+    gem.material.wireframe = false;
     collidableMeshList.push(gem);
     scene.add(gem);
 }
@@ -1076,12 +1107,16 @@ function init() {
     gui = new dat.GUI(); 
     setBackgroundColorController();
     player = configureCube();
-    console.log('player', player);
+    player.position.y = 0.5;
     scene.add(player);
 
-    addWallToScene(3, 1.5);
+    addWallToScene(3, 1.5, 90);
     addWallToScene(-3, 0.5);
-    addGemToScene(2,3);
+    addWallToScene(-2, -4, 90);
+    addGemToScene(-2, -3);
+    addGemToScene(-2,3);
+    addGemToScene(3,2);
+    addGemToScene(4,-1);
     
     renderLoop();
 }

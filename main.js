@@ -308,18 +308,22 @@ function bind() {
             switch (clearedTokens[i++]) {
                 case 'front':
                     player.position.x += unitToMove;
+                    player.rotation.y = 90*Math.PI/180;
                     break;
 
                 case 'back':
                     player.position.x -= unitToMove;
+                    player.rotation.y = 270*Math.PI/180;
                     break;
 
                 case 'right':
                     player.position.z += unitToMove;
+                    player.rotation.y = 0*Math.PI/180;
                     break;
 
                 case 'left':
                     player.position.z -= unitToMove;
+                    player.rotation.y = 180*Math.PI/180;
                     break;
 
                 case 'up':
@@ -352,16 +356,50 @@ function bind() {
 
 //SHAPE CREATION BUILDERS
 
-function createIronMan() {
-    // MODEL
-    let loader = new GLTFLoader();
-    loader.load('./models/mario/scene.gltf', function(gltf) {
-        player = gltf.scene;
-        player.scale.set(0.03, 0.03, 0.03);
-        player.position.y = 0.24
-        // SCENE HIERARCHY
-        scene.add(player);
+async function createIronMan() {
+    return new Promise((resolve, reject) => {
+        // MODEL
+        let loader = new GLTFLoader();
+        loader.load('./models/mario/scene.gltf', function (gltf) {
+            player = gltf.scene ;
+            player.scale.set(0.03, 0.03, 0.03);
+            player.position.y = 0.24;
+            player.rotation.y = 90*Math.PI/180;
+            // SCENE HIERARCHY
+            scene.add(player);
+            resolve(true);
+        });
     });
+}
+
+function configureDiamond() {
+    let vertices = [
+        0,0,0,
+        0.5,0,0,
+        0,0,0.5,
+        0.5,0,0.5,
+        0.25,0.5,0.25,
+        0.25,-0.5,0.25
+    ];
+    let indices = [
+        0,1,2,
+        2,1,3,
+        0,1,4,
+        0,2,4,
+        2,3,4,
+        3,1,4,
+        0,1,5,
+        0,2,5,
+        2,3,5,
+        3,1,5,
+    ];
+    let geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureCube() {
@@ -607,7 +645,7 @@ function runCollisionDetector() {
     //		for example, new THREE.CubeGeometry( 64, 64, 64, 8, 8, 8, wireMaterial )
     //   HOWEVER: when the origin of the ray is within the target mesh, collisions do not occur
     let originPoint = player.position.clone();
-    const position = player.geometry.attributes.position;
+    const position = player.position;
     const vector = new THREE.Vector3();
 
     for (let vertexIndex = 0; vertexIndex < position.count; vertexIndex++) {
@@ -678,7 +716,7 @@ function addGemToScene(x, z, name = "gem") {
 }
 
 //CONSTRUCTOR
-function init() {
+async function init() {
     setRenderer();
     configureScene();
     appendStats();
@@ -686,10 +724,7 @@ function init() {
     bind();
     gui = new dat.GUI(); 
     setBackgroundColorController();
-    createIronMan();
-    player = configureCube();
-    player.position.y = 0.5;
-    scene.add(player);
+    await createIronMan();
 
     addWallToScene(3, 1.5, 90);
     addWallToScene(-3, 0.5);

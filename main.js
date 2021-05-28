@@ -115,8 +115,6 @@ function addGrid() {
     scene.add(gridHelper);
 }
 function bind() {
-    const nameInput = document.getElementById('nameInput');
-    nameInput.addEventListener('input', updateNameText);
     const shapeSelect = document.getElementById('shapeSelect');
     shapeSelect.addEventListener('input', updateShapeType);
     const createButton = document.getElementById('createButton');
@@ -431,7 +429,6 @@ function configureCube() {
 function configureWall() {
     // MATERIAL
     let geometry = new THREE.BoxGeometry(0.2, 1, 3);
-
     let n = geometry.attributes.position.count; // number of vertices
     let colors = new Float32Array(n * 3);
     for(let i = 0; i < n*3; i++) {
@@ -500,7 +497,7 @@ function addMenuFor(shape, shapeName) {
     });
     shapePositionMenu.add(shapeModel, 'posHome').name("Reset");
     shapeRotationMenu.add(shapeModel, 'rotHome').name("Reset");
-    shapePropertiesMenu.add(shape.material, "wireframe").setValue(true).name("Wireframe");
+    shapePropertiesMenu.add(shape.material, "wireframe").setValue(false).name("Wireframe");
     shapePropertiesMenu.add(shapeModel, "defaultColor", shapeModel.colorList).name("Color list").onChange((item) => {
         shape.material.color = new THREE.Color(shapeModel.defaultColor.toLowerCase());
         shapeModel.colorPalette = [shape.material.color.r, shape.material.color.g, shape.material.color.b]
@@ -514,8 +511,8 @@ function addMenuFor(shape, shapeName) {
     });
 }
 
-function updateNameText(event) {
-    nameText = event.target.value;
+function updateNameText(name) {
+    nameText = name;
 }
 
 function updateShapeType(event) {
@@ -523,47 +520,18 @@ function updateShapeType(event) {
 }
 
 function createShape() {
-    if(nameIsRepeated()){ alert('Ese nombre ya está en uso'); return }
     let newShape;
-    if(shapeType === 'pyramid') {
-        newShape = configurePyramid();
+    if(shapeType === 'wall') {
+        newShape = addWallToScene(1, 1);
     } 
-    else if(shapeType === 'roof') {
-        newShape = configureRoof();
-    } 
-    else if(shapeType === 'tetris') {
-        newShape = configureTetris();
-    }
-    else if(shapeType === 'stairs') {
-        newShape = configureStairs();
-    }
-    else if(shapeType === 'diamond') {
-        newShape = configureDiamond();
-    }
-    else if(shapeType === 'table') {
-        newShape = configureTable();
-    }
-    else if(shapeType === 'l') {
-        newShape = configureL();
-    }
-    else if(shapeType === 'arrow') {
-        newShape = configureArrow();
-    }
-    else if(shapeType === 'add') {
-        newShape = configureAdd();
-    }
-    else if(shapeType === 'cross') {
-        newShape = configureCross();
-    }
-    else if(shapeType === 'cube') {
-        newShape = configureCube();
+    else if(shapeType === 'gem') {
+        newShape = addGemToScene(1, 1);
     }
     else {
         alert('Seleccione una figura');
         return;
     } 
-    scene.add(newShape);
-    addMenuFor(newShape, nameText);
+    addMenuFor(newShape, newShape.name);
     let html = getHtmlShapeCell();
     let newShapeObject = {
         name: nameText,
@@ -673,8 +641,9 @@ function renderLoop() {
     requestAnimationFrame(renderLoop);
 }
 function updateScene() {
-    runCollisionDetector();
-    // player.position.x += 0.01
+    if (!editMode) {
+        runCollisionDetector();
+    }
 }
 
 function runCollisionDetector() {
@@ -735,10 +704,12 @@ function addWallToScene(x, z, rotY = 0, name = "wall") {
 
     wall.rotation.y = rotY * Math.PI / 180;
     wall.name = name;
+    updateNameText(wall.name);
+
     wall.material.wireframe = false;
     collidableMeshList.push(wall);
-    console.log('wall', wall);
     scene.add(wall);
+    return wall;
 }
 
 function addGemToScene(x, z, name = "gem") {
@@ -750,9 +721,11 @@ function addGemToScene(x, z, name = "gem") {
     gem.position.y = 0.5
     gem.position.z = z;
     gem.name = name;
+    updateNameText(gem.name);
     gem.material.wireframe = false;
     collidableMeshList.push(gem);
     scene.add(gem);
+    return gem;
 }
 
 //CONSTRUCTOR

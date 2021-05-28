@@ -109,7 +109,7 @@ function appendStats() {
     statsContainer.appendChild(stats.dom);
 }
 function addGrid() {
-    gridHelper = new THREE.GridHelper( 10, 15 );
+    gridHelper = new THREE.GridHelper( 200, 200 );
     scene.add(gridHelper);
 }
 function bind() {
@@ -396,7 +396,7 @@ function configureDiamond() {
     let geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({color: "lime", wireframe: true, side: THREE.DoubleSide});
     let mesh = new THREE.Mesh(geometry,material);
     mesh.name = nameText;
     return mesh;
@@ -412,9 +412,32 @@ function configureCube() {
 }
 
 function configureWall() {
+    // MATERIAL
     let geometry = new THREE.BoxGeometry(0.2, 1, 3);
-    var mat = new THREE.MeshStandardMaterial({color: "blue", wireframe: true, transparent: true});
-    var mesh = new THREE.Mesh(geometry, mat);
+
+    let n = geometry.attributes.position.count; // number of vertices
+    let colors = new Float32Array(n * 3);
+    for(let i = 0; i < n*3; i++) {
+        colors[i] = Math.random();
+    }
+    geometry.setAttribute("colors", new THREE.BufferAttribute(colors, 3));
+
+    // MATERIAL
+    let material = new THREE.ShaderMaterial( {
+        uniforms: {
+            color: {
+                value: new THREE.Color(1.0, 1.0, 1.0)
+            },
+            alpha: {
+                value: 1.0
+            }
+        },
+        vertexShader:   document.getElementById('vertexshader').textContent,
+        fragmentShader: document.getElementById('fragmentshader').textContent,
+        transparent: true
+    });
+    
+    var mesh = new THREE.Mesh(geometry, material);
     mesh.name = nameText;
     return mesh
 }

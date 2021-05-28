@@ -139,6 +139,22 @@
     </style>
 </head>
 <body>
+    <script type='x-shader/x-vertex' id='vertexshader'>  
+        attribute vec3 colors; 
+        varying vec3 vcolors; 
+        void main() {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); // P' = Mproj Mmodel-view P
+            gl_PointSize = 3.0;
+            vcolors = colors;
+        }
+    </script>
+
+    <script type='x-shader/x-fragment' id='fragmentshader'>
+        varying vec3 vcolors; 
+        void main() {
+            gl_FragColor = vec4(vcolors, 1.0);
+        }
+    </script>
     <div class="main-container" id="main">
         <div class="menu-bar">
             <div id="menu">

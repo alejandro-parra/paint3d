@@ -185,8 +185,12 @@ function bind() {
                     extraSourceCode.value += 'Move(Left)\r\n';
                     break;
 
-                case 'jump':
-                    extraSourceCode.value += 'Jump()\r\n';
+                case 'up':
+                    extraSourceCode.value += 'Move(Up)\r\n';
+                    break;
+
+                case 'down':
+                    extraSourceCode.value += 'Move(Down)\r\n';
                     break;
 
                 default:
@@ -213,6 +217,7 @@ function bind() {
             sourceCodeTokens.push(selectCode.value);
         }
         sourceCode.value = '';
+        console.log(sourceCodeTokens);
         sourceCodeTokens.forEach(element => {
             switch (element) {
                 case 'front':
@@ -232,11 +237,11 @@ function bind() {
                     break;
 
                 case 'up':
-                    sourceCode.value += '  Move(Up)\r\n';
+                    sourceCode.value += 'Move(Up)\r\n';
                     break;
 
                 case 'down':
-                    sourceCode.value += '  Move(Down)\r\n';
+                    sourceCode.value += 'Move(Down)\r\n';
                     break;
 
                 default:

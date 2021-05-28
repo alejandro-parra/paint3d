@@ -109,7 +109,7 @@ function appendStats() {
     statsContainer.appendChild(stats.dom);
 }
 function addGrid() {
-    gridHelper = new THREE.GridHelper( 10, 15 );
+    gridHelper = new THREE.GridHelper( 200, 200 );
     scene.add(gridHelper);
 }
 function bind() {

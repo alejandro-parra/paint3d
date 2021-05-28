@@ -157,60 +157,65 @@
     </script>
     <div class="main-container" id="main">
         <div class="menu-bar">
-            <div class="menu-container" id="menu">
+            <div id="menu">
                 <button type="button" class="create-button" id="modeButton">Modo</button>
 
-                <p class="menuTitle">Código</p>
-
-                <select name="selectCode" class="shape-select" id="selectCode">
-                    <option value="front">Move(Front)</option>
-                    <option value="back">Move(Back)</option>
-                    <option value="right">Move(Right)</option>
-                    <option value="left">Move(Left)</option>
-                    <option value="up">Move(Up)</option>
-                    <option value="down">Move(Down)</option>
-                    <option value="for">For()</option>
-                </select>
-                <select name="selectCodeWhileIf" class="shape-select" id="selectCodeWhileIf" hidden>
-                    <option value="front">Move(Front)</option>
-                    <option value="back">Move(Back)</option>
-                    <option value="right">Move(Right)</option>
-                    <option value="left">Move(Left)</option>
-                    <option value="up">Move(Up)</option>
-                    <option value="down">Move(Down)</option>
-                </select>
-                <input type="number" id="numberInput" class="name-input" placeholder="Número de repeticiones en FOR" min="0" max ="100" hidden>
-                <textarea id="extraSourceCode" placeholder="Code for your conditional or loop" disabled hidden></textarea>
-                <button type="button" class="create-button" id="addExtraCodeBtn" hidden>Agregar Extra</button>
-                <button type="button" class="create-button" id="clearExtraCodeBtn" style="background-color: crimson; color: #FFF;" hidden>Limpiar Extra</button>
-                <button type="button" class="create-button" id="addCodeBtn">Agregar</button>
-                <textarea id="sourceCode" disabled></textarea>
-                <br>
-                <button type="button" class="create-button" id="clearCodeBtn" style="background-color: crimson; color: #FFF;">Limpiar</button>
-                <button type="button" class="create-button" id="executeCodeBtn" style="background-color: green; color: #FFF;">Ejecutar</button>
-
-                <p class="menuTitle">Control de objetos</p>
-                <label class="checkbox-label"><input type="checkbox" id="showStats" checked> Mostrar stats</label>
-                <label class="checkbox-label"><input type="checkbox" id="showFloor" checked> Mostrar piso</label>
-                <input type="text" placeholder="Nombre de nueva figura" class="name-input" id="nameInput">
-                <select name="select" class="shape-select" id="shapeSelect">
-                    <option value="">Choose a figure</option>
-                    <option value="cube">Cube</option>
-                    <option value="roof">Roof</option>
-                    <option value="pyramid">Pyramid</option>
-                    <option value="tetris">Tetris</option>
-                    <option value="stairs">Stairs</option>
-                    <option value="diamond">Diamond</option>
-                    <option value="table">Table</option>
-                    <option value="cross">Cross</option>
-                    <option value="l">L</option>
-                    <option value="arrow">Arrow</option>
-                    <option value="add">Add</option>
-                </select>
-                <button type="button" class="create-button" id="createButton">Crear</button>
-                <div class="shapes-list" id="shapesList">
-                    
+                <div id="code-section" class="menu-container">
+                    <p class="menuTitle">Código</p>
+    
+                    <select name="selectCode" class="shape-select" id="selectCode">
+                        <option value="front">Move(Front)</option>
+                        <option value="back">Move(Back)</option>
+                        <option value="right">Move(Right)</option>
+                        <option value="left">Move(Left)</option>
+                        <option value="up">Move(Up)</option>
+                        <option value="down">Move(Down)</option>
+                        <option value="for">For()</option>
+                    </select>
+                    <select name="selectCodeWhileIf" class="shape-select" id="selectCodeWhileIf" hidden>
+                        <option value="front">Move(Front)</option>
+                        <option value="back">Move(Back)</option>
+                        <option value="right">Move(Right)</option>
+                        <option value="left">Move(Left)</option>
+                        <option value="up">Move(Up)</option>
+                        <option value="down">Move(Down)</option>
+                    </select>
+                    <input type="number" id="numberInput" class="name-input" placeholder="Número de repeticiones en FOR" min="0" max ="100" hidden>
+                    <textarea id="extraSourceCode" placeholder="Code for your conditional or loop" disabled hidden></textarea>
+                    <button type="button" class="create-button" id="addExtraCodeBtn" hidden>Agregar Extra</button>
+                    <button type="button" class="create-button" id="clearExtraCodeBtn" style="background-color: crimson; color: #FFF;" hidden>Limpiar Extra</button>
+                    <button type="button" class="create-button" id="addCodeBtn">Agregar</button>
+                    <textarea id="sourceCode" disabled></textarea>
+                    <br>
+                    <button type="button" class="create-button" id="clearCodeBtn" style="background-color: crimson; color: #FFF;">Limpiar</button>
+                    <button type="button" class="create-button" id="executeCodeBtn" style="background-color: green; color: #FFF;">Ejecutar</button>
                 </div>
+
+                <div id="edit-section" class="menu-container">
+                    <p class="menuTitle">Control de objetos</p>
+                    <label class="checkbox-label"><input type="checkbox" id="showStats" checked> Mostrar stats</label>
+                    <label class="checkbox-label"><input type="checkbox" id="showFloor" checked> Mostrar piso</label>
+                    <input type="text" placeholder="Nombre de nueva figura" class="name-input" id="nameInput">
+                    <select name="select" class="shape-select" id="shapeSelect">
+                        <option value="">Choose a figure</option>
+                        <option value="cube">Cube</option>
+                        <option value="roof">Roof</option>
+                        <option value="pyramid">Pyramid</option>
+                        <option value="tetris">Tetris</option>
+                        <option value="stairs">Stairs</option>
+                        <option value="diamond">Diamond</option>
+                        <option value="table">Table</option>
+                        <option value="cross">Cross</option>
+                        <option value="l">L</option>
+                        <option value="arrow">Arrow</option>
+                        <option value="add">Add</option>
+                    </select>
+                    <button type="button" class="create-button" id="createButton">Crear</button>
+                    <div class="shapes-list" id="shapesList">
+                        
+                    </div>
+                </div>
+
             </div>
         </div>
         <div class="stats-container" id="statsContainer">

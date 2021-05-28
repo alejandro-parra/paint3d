@@ -11,6 +11,7 @@ import {GLTFLoader} from "/js/GLTFLoader.js";
 let camera1, camera2, camera3, camera4,
     cameraControls,
     clearedTokens,
+    editMode = false,
     gridHelper,
     gui,
     execInterval,
@@ -740,6 +741,8 @@ function addGemToScene(x, z, name = "gem") {
 
 //CONSTRUCTOR
 async function init() {
+    toggleMode();
+
     setRenderer();
     configureScene();
     appendStats();
@@ -786,6 +789,31 @@ window.addEventListener("resize", function() {
         renderer.setSize(window.innerWidth, window.innerHeight);
    }
 });
+
+// Toggle mode
+function toggleMode() {
+    const modeButton = document.getElementById("modeButton");
+    
+    modeButton.addEventListener('click', function() {
+        editMode = !editMode;
+        toggleModeButton();
+    });
+
+    toggleModeButton();
+
+}
+
+function toggleModeButton() {
+    const codeSection = document.getElementById("code-section");
+    const editSection = document.getElementById("edit-section");
+    if (editMode) {
+        codeSection.style.display = "none";
+        editSection.style.display = "flex";
+    } else {
+        codeSection.style.display = "flex"
+        editSection.style.display = "none";
+    }
+}
 
 document.addEventListener("keydown", (ev) => {
     if(ev.key == " ")	// Space bar

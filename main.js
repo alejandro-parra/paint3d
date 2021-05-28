@@ -6,6 +6,7 @@ import {GLTFLoader} from "/js/GLTFLoader.js";
 
 "use strict";
 
+const kTotalTimeInterval = 100;
 
 //GLOBAL VARIABLES
 let camera1, camera2, camera3, camera4,
@@ -293,16 +294,26 @@ function bind() {
             if(typeof token === 'object'){
                 for(let iterations = 0; iterations < token[0]; iterations++){
                     for(let forToken = 1; forToken < token.length; forToken++){
-                        clearedTokens.push(token[forToken]);
+                        for(let index = 0; index < kTotalTimeInterval; index++) {
+                            clearedTokens.push(token[forToken]);
+                        }
+                        for(let index = 0; index < kTotalTimeInterval; index++) {
+                            clearedTokens.push('empty');
+                        }
                     }
                 }
             } else {
-                clearedTokens.push(token);
+                for(let index = 0; index < kTotalTimeInterval; index++) {
+                    clearedTokens.push(token);
+                }
+                for(let index = 0; index < kTotalTimeInterval; index++) {
+                    clearedTokens.push('empty');
+                }
             }
         }
 
         let i = 0;
-        const unitToMove = 1;
+        const unitToMove = 0.01;
         
         function tokens(){
             switch (clearedTokens[i++]) {
@@ -350,7 +361,7 @@ function bind() {
             }
         }
 
-        execInterval = setInterval(tokens, 1000);
+        execInterval = setInterval(tokens, 1);
     }
 }
 

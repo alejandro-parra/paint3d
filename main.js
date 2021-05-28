@@ -2,9 +2,13 @@ import * as THREE from "https://unpkg.com/three@0.126.1/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js";
 import Stats from "https://unpkg.com/three@0.126.1/examples/jsm/libs/stats.module.js";
 import dat from "https://unpkg.com/three@0.126.1/examples/jsm/libs/dat.gui.module.js";
+import {GLTFLoader} from "/js/GLTFLoader.js";
+
+"use strict";
+
 
 //GLOBAL VARIABLES
-let camera,
+let camera1, camera2, camera3, camera4,
     cameraControls,
     clearedTokens,
     gridHelper,
@@ -14,6 +18,8 @@ let camera,
     renderer,
     scene,
     stats;
+let multiview = false
+let camAway = 3.0;
 
 let shapes = []; //{name: string, shape: Mesh, html: Html}
 let collidableMeshList = [];
@@ -49,19 +55,51 @@ function nameIsRepeated() {
 function setRenderer() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(new THREE.Color(0.2, 0.2, 0.35));
+    renderer.setScissorTest(true);
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 }
 function configureScene() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 1, 100);
-    camera.position.set(4, 1, 3);
-    cameraControls = new OrbitControls(camera, renderer.domElement);
-    var light = new THREE.DirectionalLight(0xffffff, 0.95);
-    light.position.setScalar(1);
+    let fovy = 60.0;
+    let aspectRatio = window.innerWidth / window.innerHeight;
+    let nearPlane = 0.1;
+    let farPlane = 10000.0;
+
+    // MAIN CAMERA
+    camera1 = new THREE.PerspectiveCamera(fovy, aspectRatio, nearPlane, farPlane);
+    camera1.position.set(0, 0, camAway);
+    cameraControls = new OrbitControls(camera1, renderer.domElement);
+    
+    // LIGHTS
+    let light = new THREE.HemisphereLight(0xffffff, 0x000000, 5);
     scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+    // var light = new THREE.DirectionalLight(0xffffff, 0.95);
+    // light.position.setScalar(1);
+    // scene.add(light);
+    // scene.add(new THREE.AmbientLight(0xffffff, 0.25));
     //scene.add(new THREE.AxesHelper(2));
+    
+     // CAMERA 2(TOP VIEW)
+     aspectRatio = window.innerWidth / 2 / window.innerHeight / 2;
+     camera2 = new THREE.PerspectiveCamera(fovy, aspectRatio, nearPlane, farPlane);
+     camera2.position.set(0., camAway, 0.); 
+     camera2.lookAt(scene.position);   
+     camera2.up.set(0., 0., 2.);    
+
+    // CAMERA 3 (FRONT VIEW)
+    aspectRatio = window.innerWidth / 2 / window.innerHeight / 2;
+    camera3 = new THREE.PerspectiveCamera(fovy, aspectRatio, nearPlane, farPlane);
+    camera3.position.set(0., 0., camAway); 
+    camera3.lookAt(scene.position);   
+    camera3.up.set(0., 2., 0.);    
+
+     // CAMERA 4 (SIDE VIEW)
+     aspectRatio = window.innerWidth / 2 / window.innerHeight / 2;
+     camera4 = new THREE.PerspectiveCamera(fovy, aspectRatio, nearPlane, farPlane);
+     camera4.position.set(camAway, 0., 0.); 
+     camera4.lookAt(scene.position);   
+     camera4.up.set(0., 1., 0.); 
 }
 function appendStats() {
     let statsContainer = document.getElementById('statsContainer');
@@ -313,512 +351,17 @@ function bind() {
 }
 
 //SHAPE CREATION BUILDERS
-function configurePyramid() {
-    let vertices = [-0.5, 0.5, 0,
-        -0.5, -0.5, 0,
-        0.5, -0.5, 0,
-        0.5, 0.5, 0,
-        0,0,0.5
-    ];
-    let indices = [0,1,2, 0,2,3, 4,1, 2,4, 3];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
 
-function configureRoof() {
-    let vertices = [
-        -0.5, 0.5, 0,
-        -0.5, -0.5, 0,
-        0.5, -0.5, 0,
-        0.5, 0.5, 0,
-        0 , 0.5, 0.5,
-        0 , -0.5, 0.5
-    ];
-    let indices = [0,1,2, 0,2,3, 4,3, 0,1,5, 2, 4, 5, 0, 1, 5,0];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureTetris() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0.5,0.5,0,
-        0,0.5,0,
-        0,0.5,0.5,
-        0.5,0.5,0.5,
-        0.5,1,0.5,
-        0,1,0.5,
-        0,1,1,
-        0.5,1,1,
-        0.5,0.5,1,
-        0,0.5,1,
-        0,0.5,1.5,
-        0.5,0.5,1.5,
-        0,0,1.5,
-        0.5,0,1.5
-    ];
-    let indices = [
-        0,1,2, 
-        3,0,2, 
-        3,4,2, 
-        4,2,5, 
-        4,5,7, 
-        5,6,7,
-        5,6,10,
-        9,6,10,
-        7,6,8,
-        8,6,9,
-        4,7,11,
-        8,7,11,
-        8,11,9,
-        11,10,9,
-        11,10,13,
-        11,12,13,
-        12,14,13,
-        14,15,13,
-        2,1,15,
-        13,15,2,
-        0,3,14,
-        14,12,3,
-        0,1,14,
-        14,15,1
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureStairs() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0.5,0.5,0,
-        0,0.5,0,
-        0,0.5,0.5,
-        0.5,0.5,0.5,
-        0.5,1,0.5,
-        0,1,0.5,
-        0,1,1,
-        0.5,1,1,
-        0.5,0.5,1,
-        0,0.5,1,
-        0,0.5,1.5,
-        0.5,0.5,1.5,
-        0,0,1.5,
-        0.5,0,1.5,
-        0,1.5,1,
-        0,1.5,1.5,
-        0.5,1.5,1.5,
-        0.5,1.5,1
-    ];
-    let indices = [
-        0,1,2, 
-        3,0,2, 
-        3,4,2, 
-        4,2,5, 
-        4,5,7, 
-        5,6,7,
-        5,6,10,
-        9,6,10,
-        7,6,8,
-        8,6,9,
-        4,7,11,
-        8,7,11,
-        8,11,9,
-        11,10,9,
-        11,10,13,
-        11,12,13,
-        12,14,13,
-        14,15,13,
-        2,1,15,
-        13,15,2,
-        0,3,14,
-        14,12,3,
-        0,1,14,
-        14,15,1,
-        11,16,19,
-        19,10,11,
-        19,10,13,
-        19,18,13,
-        16,11,12,
-        16,17,12,
-        12,17,18,
-        13,18,12,
-        19,16,17,
-        17,19,18
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureDiamond() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0,0,0.5,
-        0.5,0,0.5,
-        0.25,0.5,0.25,
-        0.25,-0.5,0.25
-    ];
-    let indices = [
-        0,1,2,
-        2,1,3,
-        0,1,4,
-        0,2,4,
-        2,3,4,
-        3,1,4,
-        0,1,5,
-        0,2,5,
-        2,3,5,
-        3,1,5,
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureTable() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0,1,0,
-        0.5,1,0,
-        0.5,0,0.5,
-        0,0,0.5,
-        0,0.5,0.5,
-        0.5,0.5,0.5,
-        0.5,0.5,1,
-        0,0.5,1,
-        0,0,1,
-        0.5,0,1,
-        0.5,0,1.5,
-        0,0,1.5,
-        0.5,1,1.5,
-        0,1,1.5,
-        0.5,0.5,0,
-        0,0.5,0,
-        0,0.5,1.5,
-        0.5,0.5,1.5
-    ];
-    let indices = [
-        0,2,1,
-        2,1,3,
-        0,1,4,
-        0,5,4,
-        6,5,4,
-        4,7,6,
-        6,7,9,
-        7,9,8,
-        9,10,8,
-        10,8,11,
-        10,11,13,
-        11,13,12,
-        13,15,12,
-        12,15,14,
-        2,3,14,
-        14,3,15,
-        3,16,19,
-        14,3,19,
-        1,4,7,
-        1,16,7,
-        11,12,19,
-        11,8,19,
-        2,17,15,
-        17,15,18,
-        0,17,6,
-        0,5,6,
-        9,10,18,
-        10,18,13
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureL() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0,0,1,
-        0.5,0,1,
-        0.5,0.5,1,
-        0,0.5,1,
-        0,0.5,0.5,
-        0.5,0.5,0.5,
-        0.5,1,0.5,
-        0,1,0.5,
-        0,1,0,
-        0.5,1,0,
-        0.5,0,0.5,
-        0,0,0.5
-    ];
-    let indices = [
-        0,1,2,
-        1,2,3,
-        0,1,10,
-        10,1,11,
-        1,12,8,
-        1,11,8,
-        0,13,9,
-        0,9,10,
-        10,11,9,
-        11,9,8,
-        2,4,3,
-        5,2,4,
-        12,3,4,
-        12,7,4,
-        13,6,2,
-        2,6,5,
-        6,5,7,
-        7,5,4,
-        6,8,9,
-        6,7,8
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureArrow() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0,0,0.5,
-        0.5,0,0.5,
-        0,0.5,0.25,
-        0.5,0.5,0.25,
-        0.5,0.5,0.75,
-        0,0.5,0.75,
-        0,1,0,
-        0.5,1,0,
-        0,1,0.5,
-        0.5,1,0.5
-    ];
-    let indices = [
-        0,1,2,
-        1,2,3,
-        0,4,1,
-        4,5,1,
-        1,5,3,
-        3,5,6,
-        0,4,2,
-        4,2,7,
-        2,7,6,
-        2,6,3,
-        4,8,9,
-        4,9,5,
-        9,5,6,
-        9,11,6,
-        7,10,11,
-        7,6,11,
-        8,7,10,
-        8,4,7,
-        8,9,10,
-        9,10,11
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureAdd() {
-    let vertices = [
-        0,0,0,
-        0.5,0,0,
-        0,0,0.5,
-        0.5,0,0.5,
-        0,0.5,0.5,
-        0.5,0.5,0.5,
-        0.5,0.5,0,
-        0,0.5,0,
-        0,0.5,-0.5,
-        0.5,0.5,-0.5,
-        0,1,-0.5,
-        0.5,1,-0.5,
-        0,1,0,
-        0.5,1,0,
-        0,1,0.5,
-        0.5,1,0.5,
-        0,1,1,
-        0.5,1,1,
-        0,0.5,1,
-        0.5,0.5,1,
-        0,1.5,0,
-        0.5,1.5,0,
-        0,1.5,0.5,
-        0.5,1.5,0.5
-    ];
-    let indices = [
-        0,1,2,
-        1,2,3,
-        0,7,1,
-        7,6,1,
-        2,4,3,
-        4,5,3,
-        1,6,3,
-        6,5,3,
-        0,7,4,
-        4,2,0,
-        6,8,7,
-        6,8,9,
-        8,9,10,
-        10,9,11,
-        9,11,13,
-        9,6,13,
-        8,10,12,
-        8,7,12,
-        10,12,11,
-        12,11,13,
-        6,13,15,
-        6,5,15,
-        7,12,14,
-        7,4,14,
-        4,14,16,
-        4,18,16,
-        5,19,17,
-        5,15,17,
-        4,5,18,
-        5,19,18,
-        18,16,17,
-        18,19,17,
-        14,15,16,
-        15,16,17,
-        12,20,21,
-        12,21,13,
-        13,21,15,
-        23,21,15,
-        12,20,14,
-        14,20,22,
-        22,14,23,
-        14,15,23,
-        20,21,22,
-        21,23,22
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
-}
-
-function configureCross() {
-    let vertices = [
-        0,-0.5,0,
-        0.5,-0.5,0,
-        0,-0.5,0.5,
-        0.5,-0.5,0.5,
-        0,0.5,0.5,
-        0.5,0.5,0.5,
-        0.5,0.5,0,
-        0,0.5,0,
-        0,0.5,-0.5,
-        0.5,0.5,-0.5,
-        0,1,-0.5,
-        0.5,1,-0.5,
-        0,1,0,
-        0.5,1,0,
-        0,1,0.5,
-        0.5,1,0.5,
-        0,1,1,
-        0.5,1,1,
-        0,0.5,1,
-        0.5,0.5,1,
-        0,1.5,0,
-        0.5,1.5,0,
-        0,1.5,0.5,
-        0.5,1.5,0.5
-    ];
-    let indices = [
-        0,1,2,
-        1,2,3,
-        0,7,1,
-        7,6,1,
-        2,4,3,
-        4,5,3,
-        1,6,3,
-        6,5,3,
-        0,7,4,
-        4,2,0,
-        6,8,7,
-        6,8,9,
-        8,9,10,
-        10,9,11,
-        9,11,13,
-        9,6,13,
-        8,10,12,
-        8,7,12,
-        10,12,11,
-        12,11,13,
-        6,13,15,
-        6,5,15,
-        7,12,14,
-        7,4,14,
-        4,14,16,
-        4,18,16,
-        5,19,17,
-        5,15,17,
-        4,5,18,
-        5,19,18,
-        18,16,17,
-        18,19,17,
-        14,15,16,
-        15,16,17,
-        12,20,21,
-        12,21,13,
-        13,21,15,
-        23,21,15,
-        12,20,14,
-        14,20,22,
-        22,14,23,
-        14,15,23,
-        20,21,22,
-        21,23,22
-    ];
-    let geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    let mesh = new THREE.Mesh(geometry,material);
-    mesh.name = nameText;
-    return mesh;
+function createIronMan() {
+    // MODEL
+    let loader = new GLTFLoader();
+    loader.load('./models/mario/scene.gltf', function(gltf) {
+        player = gltf.scene;
+        player.scale.set(0.03, 0.03, 0.03);
+        player.position.y = 0.24
+        // SCENE HIERARCHY
+        scene.add(player);
+    });
 }
 
 function configureCube() {
@@ -1008,7 +551,44 @@ function setBackgroundColorController() {
 //UI UPDATE GENERAL METHODS
 function renderLoop() {
     stats.begin();
-    renderer.render(scene, camera);
+    if(!multiview) {
+        // CAMERA 1
+        camera1.aspect =  window.innerWidth / window.innerHeight;
+        camera1.updateProjectionMatrix();
+        renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+        renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
+        renderer.render(scene, camera1);
+   } 
+   else {
+       // CAMERA 1
+       camera1.aspect = window.innerWidth/2. /  (window.innerHeight/2);
+       camera1.updateProjectionMatrix();
+      
+       renderer.setViewport(window.innerWidth/2., window.innerHeight/2, window.innerWidth/2., window.innerHeight/2);
+       renderer.setScissor(window.innerWidth/2., window.innerHeight/2, window.innerWidth/2., window.innerHeight/2);
+       renderer.render(scene, camera1);
+
+       // CAMERA 2
+       camera2.aspect = window.innerWidth/2. / (window.innerHeight/2);
+       camera2.updateProjectionMatrix();
+       renderer.setViewport(0, window.innerHeight/2, window.innerWidth/2., window.innerHeight/2);
+       renderer.setScissor(0, window.innerHeight/2, window.innerWidth/2., window.innerHeight/2);
+       renderer.render(scene, camera2);
+
+       // CAMERA 3
+       camera3.aspect = window.innerWidth/2. / (window.innerHeight/2);
+       camera3.updateProjectionMatrix();
+       renderer.setViewport(0, 0, window.innerWidth/2., window.innerHeight/2);
+       renderer.setScissor(0, 0, window.innerWidth/2., window.innerHeight/2);
+       renderer.render(scene, camera3);
+
+       // CAMERA 4
+       camera4.aspect = window.innerWidth/2. / (window.innerHeight/2);
+       camera4.updateProjectionMatrix();
+       renderer.setViewport(window.innerWidth/2, 0, window.innerWidth/2., window.innerHeight/2);
+       renderer.setScissor(window.innerWidth/2, 0, window.innerWidth/2., window.innerHeight/2);
+       renderer.render(scene, camera4);
+   }
     updateScene();
     stats.end();
     stats.update();
@@ -1106,6 +686,7 @@ function init() {
     bind();
     gui = new dat.GUI(); 
     setBackgroundColorController();
+    createIronMan();
     player = configureCube();
     player.position.y = 0.5;
     scene.add(player);
@@ -1124,7 +705,33 @@ function init() {
 // EVENT LISTENERS
 document.addEventListener("DOMContentLoaded", init);
 window.addEventListener("resize", function() {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    if(!multiview) {
+        // CAMERA 1
+        camera1.aspect = window.innerWidth / window.innerHeight;
+        camera1.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+   }
+   else {
+        // CAMERA 1
+        camera1.aspect = window.innerWidth / 2. / (window.innerHeight / 2);
+        camera1.updateProjectionMatrix();
+       // CAMERA 2
+        camera2.aspect = window.innerWidth / 2. / (window.innerHeight / 2);
+        camera2.updateProjectionMatrix();
+        // CAMERA 3
+        camera3.aspect = window.innerWidth / 2. / (window.innerHeight / 2);
+        camera3.updateProjectionMatrix();
+        // CAMERA 4
+        camera4.aspect = window.innerWidth / 2. / (window.innerHeight / 2);
+        camera4.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+   }
 });
+
+document.addEventListener("keydown", (ev) => {
+    if(ev.key == " ")	// Space bar
+	{
+		multiview = !multiview;
+	}
+}, false);

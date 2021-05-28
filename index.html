@@ -151,17 +151,17 @@
                     <option value="back">Move(Back)</option>
                     <option value="right">Move(Right)</option>
                     <option value="left">Move(Left)</option>
-                    <option value="jump">Jump()</option>
-                    <option value="if">If(Collision)</option>
+                    <option value="up">Move(Up)</option>
+                    <option value="down">Move(Down)</option>
                     <option value="for">For()</option>
-                    <option value="while">While(Collision)</option>
                 </select>
                 <select name="selectCodeWhileIf" class="shape-select" id="selectCodeWhileIf" hidden>
                     <option value="front">Move(Front)</option>
                     <option value="back">Move(Back)</option>
                     <option value="right">Move(Right)</option>
                     <option value="left">Move(Left)</option>
-                    <option value="jump">Jump()</option>
+                    <option value="up">Move(Up)</option>
+                    <option value="down">Move(Down)</option>
                 </select>
                 <input type="number" id="numberInput" class="name-input" placeholder="Número de repeticiones en FOR" min="0" max ="100" hidden>
                 <textarea id="extraSourceCode" placeholder="Code for your conditional or loop" disabled hidden></textarea>
@@ -170,8 +170,8 @@
                 <button type="button" class="create-button" id="addCodeBtn">Agregar</button>
                 <textarea id="sourceCode" disabled></textarea>
                 <br>
-                <button type="button" class="create-button" id="executeCodeBtn" style="background-color: green; color: #FFF;">Ejecutar</button>
                 <button type="button" class="create-button" id="clearCodeBtn" style="background-color: crimson; color: #FFF;">Limpiar</button>
+                <button type="button" class="create-button" id="executeCodeBtn" style="background-color: green; color: #FFF;">Ejecutar</button>
 
                 <p class="menuTitle">Control de objetos</p>
                 <label class="checkbox-label"><input type="checkbox" id="showStats" checked> Mostrar stats</label>

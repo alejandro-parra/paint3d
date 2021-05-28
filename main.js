@@ -22,6 +22,7 @@ dat.GUI.prototype.removeFolder = function(name) {
     delete this.__folders[name];
     this.onResize();
 }
+
 function nameIsRepeated() {
     for(let shape of shapes) {
         if(shape.name === nameText){
@@ -84,20 +85,19 @@ function bind() {
     const addCodeBtn = document.getElementById('addCodeBtn');
     const clearCodeBtn = document.getElementById('clearCodeBtn');
     const clearExtraCodeBtn = document.getElementById('clearExtraCodeBtn');
+    const executeCodeBtn = document.getElementById('executeCodeBtn');
 
     selectCode.addEventListener('change', () => {
         extraSourceCodeTokens = [];
-        if(selectCode.value==="while" || selectCode.value==="if" || selectCode.value==="for"){
+        if(selectCode.value==="for"){
             selectCodeWhileIf.hidden = false;
+            
             extraSourceCode.hidden = false;
-            if(selectCode.value==="for"){
-                numberInput.hidden = false;
-                numberInput.value = "";
-            } else {
-                numberInput.hidden = true;
-                numberInput.value = -1;
-            }
             extraSourceCode.value = "";
+            
+            numberInput.hidden = false;
+            numberInput.value = "";
+            
             addExtraCodeBtn.hidden = false;
             clearExtraCodeBtn.hidden = false;
         } else {
@@ -143,30 +143,9 @@ function bind() {
     }
 
     addCodeBtn.onclick = () => {
-        if(selectCode.value==="while" || selectCode.value==="if" || selectCode.value==="for"){
+        if(selectCode.value==="for"){
             var codeBlock = [];
-
-            switch (selectCode.value) {
-                case 'while':
-                    codeBlock.push('while');
-                    break;
-                
-                case 'for':
-                    codeBlock.push('for');
-                    break;
-                
-
-                case 'if':
-                    codeBlock.push('if');
-                    break;
-                        
-                default:
-                    break;
-            }
-
-            if(selectCode.value==='for'){
-                codeBlock.push(numberInput.value);
-            }
+            codeBlock.push(numberInput.value);
 
             extraSourceCodeTokens.forEach(element => {
                 codeBlock.push(element);
@@ -199,110 +178,48 @@ function bind() {
                     sourceCode.value += 'Move(Left)\r\n';
                     break;
 
-                case 'jump':
-                    sourceCode.value += 'Jump()\r\n';
+                case 'up':
+                    sourceCode.value += '  Move(Up)\r\n';
+                    break;
+
+                case 'down':
+                    sourceCode.value += '  Move(Down)\r\n';
                     break;
 
                 default:
-                    switch (element[0]) {
-                        case 'while':
-                            sourceCode.value += 'While{\r\n';
-                            for (let i = 1; i < element.length; i++) {
-                                switch (element[i]) {
-                                    case 'front':
-                                        sourceCode.value += '  Move(Front)\r\n';
-                                        break;
-                
-                                    case 'back':
-                                        sourceCode.value += '  Move(Back)\r\n';
-                                        break;
-                
-                                    case 'right':
-                                        sourceCode.value += '  Move(Right)\r\n';
-                                        break;
-                
-                                    case 'left':
-                                        sourceCode.value += '  Move(Left)\r\n';
-                                        break;
-                
-                                    case 'jump':
-                                        sourceCode.value += '  Jump()\r\n';
-                                        break;
+                    sourceCode.value += 'For{\r\n';
+                    for (let i = 0; i < element.length; i++) {
+                        switch (element[i]) {
+                            case 'front':
+                                sourceCode.value += '  Move(Front)\r\n';
+                                break;
+        
+                            case 'back':
+                                sourceCode.value += '  Move(Back)\r\n';
+                                break;
+        
+                            case 'right':
+                                sourceCode.value += '  Move(Right)\r\n';
+                                break;
+        
+                            case 'left':
+                                sourceCode.value += '  Move(Left)\r\n';
+                                break;
+        
+                            case 'up':
+                                sourceCode.value += '  Move(Up)\r\n';
+                                break;
 
-                                    default:
-                                        break;
-                                }
-                            }
-                            sourceCode.value += '}\r\n';
-                            break;
-                    
-                        case 'for':
-                            sourceCode.value += 'For{\r\n';
-                            for (let i = 1; i < element.length; i++) {
-                                switch (element[i]) {
-                                    case 'front':
-                                        sourceCode.value += '  Move(Front)\r\n';
-                                        break;
-                
-                                    case 'back':
-                                        sourceCode.value += '  Move(Back)\r\n';
-                                        break;
-                
-                                    case 'right':
-                                        sourceCode.value += '  Move(Right)\r\n';
-                                        break;
-                
-                                    case 'left':
-                                        sourceCode.value += '  Move(Left)\r\n';
-                                        break;
-                
-                                    case 'jump':
-                                        sourceCode.value += '  Jump()\r\n';
-                                        break;
+                            case 'down':
+                                sourceCode.value += '  Move(Down)\r\n';
+                                break;
 
-                                    default:
-                                        sourceCode.value += '  Iteración: ' + element[i] + '\r\n'
-                                        break;
-                                }
-                            }
-                            sourceCode.value += '}\r\n';
-                            break;
-
-                        case 'if':
-                            sourceCode.value += 'If{\r\n';
-                            for (let i = 1; i < element.length; i++) {
-                                switch (element[i]) {
-                                    case 'front':
-                                        sourceCode.value += '  Move(Front)\r\n';
-                                        break;
-                
-                                    case 'back':
-                                        sourceCode.value += '  Move(Back)\r\n';
-                                        break;
-                
-                                    case 'right':
-                                        sourceCode.value += '  Move(Right)\r\n';
-                                        break;
-                
-                                    case 'left':
-                                        sourceCode.value += '  Move(Left)\r\n';
-                                        break;
-                
-                                    case 'jump':
-                                        sourceCode.value += '  Jump()\r\n';
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                            }
-                            sourceCode.value += '}\r\n';
-                            break;
-                    
-                        default:
-                            break;
+                            default:
+                                sourceCode.value += '  Iteración: ' + element[i] + '\r\n'
+                                break;
+                        }
                     }
-
+                    sourceCode.value += '}\r\n';
                     break;
             }
         });
@@ -316,6 +233,62 @@ function bind() {
     clearExtraCodeBtn.onclick = () => {
         extraSourceCode.value = '';
         extraSourceCodeTokens = [];
+    }
+
+    executeCodeBtn.onclick = () => {
+        let clearedTokens = [];
+
+        for(let token of sourceCodeTokens){
+            if(typeof token === 'object'){
+                for(let iterations = 0; iterations < token[0]; iterations++){
+                    for(let forToken = 1; forToken < token.length; forToken++){
+                        clearedTokens.push(token[forToken]);
+                    }
+                }
+            } else {
+                clearedTokens.push(token);
+            }
+        }
+
+        let i = 0;
+        const unitToMove = 1;
+        
+        function tokens(){
+            switch (clearedTokens[i++]) {
+                case 'front':
+                    player.position.x += unitToMove;
+                    break;
+
+                case 'back':
+                    player.position.x -= unitToMove;
+                    break;
+
+                case 'right':
+                    player.position.z += unitToMove;
+                    break;
+
+                case 'left':
+                    player.position.z -= unitToMove;
+                    break;
+
+                case 'up':
+                    player.position.y += unitToMove;
+                    break;
+
+                case 'down':
+                    player.position.y -= unitToMove;
+                    break;
+
+                default:
+
+                    break;
+            }
+            if(i >= clearedTokens.length){
+                clearInterval(intr);
+            }
+        }
+
+        let intr = setInterval(tokens, 1000);
     }
 }
 
@@ -332,7 +305,9 @@ function configurePyramid() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureRoof() {
@@ -349,7 +324,9 @@ function configureRoof() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureTetris() {
@@ -401,7 +378,9 @@ function configureTetris() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureStairs() {
@@ -467,7 +446,9 @@ function configureStairs() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureDiamond() {
@@ -495,7 +476,9 @@ function configureDiamond() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureTable() {
@@ -555,7 +538,9 @@ function configureTable() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureL() {
@@ -601,7 +586,9 @@ function configureL() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureArrow() {
@@ -645,7 +632,9 @@ function configureArrow() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureAdd() {
@@ -725,7 +714,9 @@ function configureAdd() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureCross() {
@@ -805,7 +796,9 @@ function configureCross() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true, side: THREE.DoubleSide});
-    return new THREE.Mesh(geometry,material);
+    let mesh = new THREE.Mesh(geometry,material);
+    mesh.name = nameText;
+    return mesh;
 }
 
 function configureCube() {
@@ -814,7 +807,7 @@ function configureCube() {
     var mat = new THREE.MeshStandardMaterial({color: "red", wireframe: true, transparent: true});
     var mesh = new THREE.Mesh(geometry, mat);
     mesh.name = nameText;
-    return mesh
+    return mesh;
 }
 
 //EVENT HANDLERS
@@ -871,12 +864,15 @@ function addMenuFor(shape, shapeName) {
         shape.material.opacity = value;
     });
 }
+
 function updateNameText(event) {
     nameText = event.target.value;
 }
+
 function updateShapeType(event) {
     shapeType = event.target.value;
 }
+
 function createShape() {
     if(nameIsRepeated()){ alert('Ese nombre ya está en uso'); return }
     let newShape;
@@ -927,6 +923,7 @@ function createShape() {
     };
     shapes.push(newShapeObject);
 }
+
 function getHtmlShapeCell() {
     let shapeList = document.getElementById('shapesList');
     shapeList.innerHTML += `<div class="shape"><p class="shape-title">${nameText}</p><button type="button" class="shape-remove" id="${nameText}">Borrar</button></div>`;
@@ -934,6 +931,7 @@ function getHtmlShapeCell() {
     newCell.addEventListener('click', deleteShape);
     return `<div class="shape"><p class="shape-title">${nameText}</p><button type="button" class="shape-remove" id="${nameText}">Borrar</button></div>`;
 }
+
 async function deleteShape(event) {
     console.log(event.target.id)
     for(let [index, shape] of shapes.entries()) {
@@ -948,6 +946,7 @@ async function deleteShape(event) {
         }
     }
 }
+
 function renderHtmlList() {
     let newList = "";
     for(let shape of shapes){
@@ -956,9 +955,11 @@ function renderHtmlList() {
     let shapeList = document.getElementById('shapesList');
     shapeList.innerHTML = newList;
 }
+
 function changeGridVisibility(event){
     gridHelper.visible = event.target.checked;
 }
+
 function changeStatsVisibility(event) {
     if(event.target.checked){
         stats.domElement.style.visibility = 'visible';
